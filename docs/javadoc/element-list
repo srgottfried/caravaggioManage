@@ -1,0 +1,7 @@
+com.proyud4
+com.proyud4.auth.handler
+com.proyud4.controller
+com.proyud4.controller.util.paginator
+com.proyud4.model.dao
+com.proyud4.model.entity
+com.proyud4.model.service

@@ -1,0 +1,17 @@
+CREATE SCHEMA IF NOT EXISTS `proy-ud4-db`;
+USE `proy-ud4-db`;
+INSERT INTO clientes (nombre, apellido, email, create_at, foto) VALUES ('test', 'test', 'test@mail.com', '1995-02-23', '');
+INSERT INTO productos (nombre, precio, create_at) VALUES ('Computadora ASUS ROG', 799, NOW());
+INSERT INTO productos (nombre, precio, create_at) VALUES ('Smartphone Samsung Galaxy S21', 800, NOW());
+INSERT INTO facturas (descripcion, observacion, cliente_id, create_at) VALUES ('Factura equipos de oficina', null, 1, NOW());
+INSERT INTO facturas_items (cantidad, factura_id, producto_id) VALUES (1, 1, 1);
+INSERT INTO facturas_items (cantidad, factura_id, producto_id) VALUES (2, 1, 4);
+INSERT INTO facturas_items (cantidad, factura_id, producto_id) VALUES (1, 1, 5);
+INSERT INTO facturas_items (cantidad, factura_id, producto_id) VALUES (1, 1, 7);
+INSERT INTO facturas (descripcion, observacion, cliente_id, create_at) VALUES ('Factura bicicleta', 'Observación importante', 1, NOW());
+INSERT INTO facturas_items (cantidad, factura_id, producto_id) VALUES (3, 2, 6);
+INSERT INTO users (username, password, enabled) VALUES ('admintest', '$2a$12$d6PSIyKdF6I1fXMIhfbZhelJrli3NHyy9sPB40ESWmfoRS0.Tjscm', 1);
+INSERT INTO users (username, password, enabled) VALUES ('clientetest', '$2a$12$VV39iqqVnKjeRx/mjWX72uu/Xjd/RQ.7mpKJGl6tFkqsvCtk6ka1u', 1);
+INSERT INTO authorities (user_id, authority) value (1, 'ROLE_USER_TEST');
+INSERT INTO authorities (user_id, authority) value (1, 'ROLE_ADMIN_TEST');
+INSERT INTO authorities (user_id, authority) value (2, 'ROLE_USER_TEST');

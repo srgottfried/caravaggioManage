@@ -1,0 +1,2 @@
+DROP DATABASE `proy-ud4-db`;
+CREATE SCHEMA IF NOT EXISTS `proy-ud4-db`;

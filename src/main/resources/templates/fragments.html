@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:fragment="head (titulo)">
+    <meta charset="UTF-8"/>
+    <title th:text="${titulo}"></title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/jquery-ui.min.css}"/>
+</head>
+
+<div th:fragment="javascript">
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/js/jquery-ui.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+</div>
+
+<nav th:fragment="paginador">
+    <ul class="pagination">
+        <li th:class="${page.isFirst() ? 'page-item disabled' : 'page-item'}">
+            <span class="page-link" th:if="${page.isFirst()}">Primera</span>
+            <a class="page-link" th:if="${not page.isFirst()}" th:href="@{${page.url}(page=0)}">Primera</a>
+        </li>
+        <li th:class="${not page.hasPrevious() ? 'page-item disabled' : 'page-item'}">
+            <span class="page-link" th:if="${not page.hasPrevious()}">&laquo;</span>
+            <a class="page-link" th:if="${page.hasPrevious()}" th:href="@{${page.url}(page=${page.paginaActual - 2})}">&laquo;</a>
+        </li>
+        <li th:each="item : ${page.paginas}" th:class="${item.actual ? 'page-item active' : 'page-item'}">
+            <span class="page-link" th:if="${item.actual}" th:text="${item.numero}"></span>
+            <a class="page-link" th:if="${not item.actual}" th:href="@{${page.url}(page = ${item.numero - 1})}"
+               th:text="${item.numero}"></a>
+        </li>
+        <li th:class="${not page.hasNext() ? 'page-item disabled' : 'page-item'}">
+            <span class="page-link" th:if="${not page.hasNext()}">&raquo;</span>
+            <a class="page-link" th:if="${page.hasNext()}"
+               th:href="@{${page.url}(page=${page.paginaActual})}">&raquo;</a>
+        </li>
+        <li th:class="${page.isLast() ? 'page-item disabled' : 'page-item'}">
+            <span class="page-link" th:if="${page.isLast()}">Última</span>
+            <a class="page-link" th:if="${not page.isLast()}" th:href="@{${page.url}(page=${page.totalPaginas - 1})}">Última</a>
+        </li>
+    </ul>
+</nav>
+
+<header th:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="btn btn-secondary" th:href="@{/clientes}">Lista de clientes</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav float-right">
+                    <li sec:authorize="!isAuthenticated()">
+                        <a class="btn btn-outline-primary" th:href="@{/login}">Iniciar Sesión</a>
+                    </li>
+
+                    <li class="dropdown show" sec:authorize="isAuthenticated()">
+                        <a class="btn btn-outline-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span sec:authentication="name"></span>
+                        </a>
+
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <form id="logoutForm" th:action="@{/logout}" method="POST">
+                                <button class="dropdown-item" type="submit"
+                                        onclick="document.getElementById('logoutForm').submit();">
+                                    Cerrar Sesión
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="alert alert-success" th:if="${success != null}" th:text="${success}"></div>
+    <div class="alert alert-danger" th:if="${error != null}" th:text="${error}"></div>
+    <div class="alert alert-warning" th:if="${warning != null}" th:text="${warning}"></div>
+    <div class="alert alert-info" th:if="${info != null}" th:text="${info}"></div>
+</header>
+
+<footer class="container" th:fragment="footer">
+    <hr/>
+    <p sec:authorize="isAuthenticated()">
+        Sesión de: <span sec:authentication="name"></span> | Roles: <span
+            sec:authentication="principal.authorities"></span>
+    </p>
+    <p class="text-center">
+        Powered by <a href="https://spring.io/projects/spring-boot">Spring Boot</a>
+        & <a href="https://www.thymeleaf.org">Thymeleaf</a>
+    </p>
+    <p class="text-center">
+        Este proyecto fue desarrollado para la asignatura de Acceso a Datos de segundo
+        curso de DAM, por los alumnos<br/>
+        Manuel Landín, Iago Leirós y Alejandro Vázquez.
+        <br/>
+        &copy; 2023. Todos los derechos reservados.
+
+    </p>
+    <div th:replace="fragments::javascript"></div>
+</footer>
+
+<script type="text/javascript" th:fragment="jquery_factura">
+    $(document).ready(
+        function () {
+            $("#buscar_producto").autocomplete({
+
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/factura/cargar-productos/" + request.term,
+                        dataType: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return {
+                                    value: item.id,
+                                    label: item.nombre,
+                                    precio: item.precio,
+                                };
+                            }));
+                        },
+                    });
+                },
+                select: function (event, ui) {
+
+                    if (itemsHelper.hasProducto(ui.item.value)) {
+                        itemsHelper.incrementaCantidad(ui.item.value, ui.item.precio);
+                        return false;
+                    }
+
+                    var linea = $("#plantillaItemsFactura").html();
+
+                    linea = linea.replace(/{ID}/g, ui.item.value);
+                    linea = linea.replace(/{NOMBRE}/g, ui.item.label);
+                    linea = linea.replace(/{PRECIO}/g, ui.item.precio);
+
+                    $("#cargarItemProductos tbody").append(linea);
+                    itemsHelper.calcularImporte(ui.item.value, ui.item.precio, 1);
+                    return false;
+                }
+            });
+
+            $("form").submit(function () {
+                $("#plantillaItemsFactura").remove();
+                return;
+            });
+        }
+    );
+    var itemsHelper = {
+        calcularImporte: function (id, precio, cantidad) {
+            $("#total_importe_" + id).html(parseInt(precio) * parseInt(cantidad))
+            this.calcularGranTotal();
+        },
+        hasProducto: function (id) {
+            var resultado = false;
+            $('input[name="item_id[]"]').each(function () {
+                if (parseInt(id) == parseInt($(this).val())) {
+                    resultado = true;
+                }
+            });
+            return resultado;
+        },
+        incrementaCantidad: function (id, precio) {
+            var cantidad = $("#cantidad_" + id).val() ? parseInt($("#cantidad_" + id).val()) : 0;
+            $("#cantidad_" + id).val(++cantidad);
+            this.calcularImporte(id, precio, cantidad);
+        },
+        eliminarLineaFactura: function (id) {
+            $("#row_" + id).remove();
+            this.calcularGranTotal();
+        },
+        calcularGranTotal: function () {
+            var total = 0;
+
+            $('span[id^="total_importe_"]').each(function () {
+                total += parseInt($(this).html());
+            });
+
+            $('#gran_total').html(total);
+        }
+    }
+</script>
+
+<table th:fragment="itemsFactura" class="d-none">
+    <tbody id="plantillaItemsFactura">
+    <tr id="row_{ID}">
+        <td class="d-none"><input type="hidden" value="{ID}" name="item_id[]"/></td>
+        <td>{NOMBRE}</td>
+        <td>{PRECIO}</td>
+        <td><input type="number" value="1" name="cantidad[]" id="cantidad_{ID}" class="form-control col-sm-4"
+                   onchange="itemsHelper.calcularImporte({ID}, {PRECIO}, this.value);"/></td>
+        <td><span id="total_importe_{ID}">0</span></td>
+        <td><a href="#" class="btn btn-danger btn-xs" onclick="itemsHelper.eliminarLineaFactura({ID});">x</a></td>
+    </tr>
+    </tbody>
+</table>
+
+</html>

@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.proyud4"},{"l":"com.proyud4.auth.handler"},{"l":"com.proyud4.controller"},{"l":"com.proyud4.controller.util.paginator"},{"l":"com.proyud4.model.dao"},{"l":"com.proyud4.model.entity"},{"l":"com.proyud4.model.service"}];updateSearchResults();
